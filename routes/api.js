@@ -51,7 +51,7 @@ module.exports = (app) => {
       if(!stocks || stocks.length < 1) res.status(400).send('no stock specified');
     
       const retInfo = stocks.map(async stock => {
-        const apiUrl = `https://repeated-alpaca.glitch.me/v1/stock/${stock}/quote`;
+        const apiUrl = axios(`https://repeated-alpaca.glitch.me/v1/stock/${stock}/quote`)
         
         const res = await axios(apiUrl)
         const stockInfo = res.json();
