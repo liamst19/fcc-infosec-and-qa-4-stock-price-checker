@@ -43,39 +43,20 @@ module.exports = (app) => {
   mongoose.connect(process.env.DB);
   
   app.route('/api/stock-prices')
-    .get(async  (req, res) => {
+    .get((req, res) => {
       const stocks = req.query.stock ? Array.isArray(req.query.stock) ? req.query.stock : [req.query.stock] : null; // can be an array: Array.isArray(stock)
       const like = req.query.like === 'true';
       const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
       
       if(!stocks || stocks.length < 1) res.status(400).send('no stock specified');
     
-      const retInfo = stocks.map(async stock => {
-        const apiUrl = axios(`https://repeated-alpaca.glitch.me/v1/stock/${stock}/quote`)
-        
-        const res = await axios(apiUrl)
-        const stockInfo = res.json();
-  
-        return stockInfo;
-        // Add like to DB
-        /*
-        if(like){
-          Like.find({ stock }, async (err, likedStock) => {
-            if(err){
-              console.log('error finding like', err)
-            } else {
-              if(!likedStock){
-                // Add new like
-                const { err2, savedLike } = await (new Like({ stock, ip })).save();
-              }
-            }
-          })
-        }
-        */
-      });
+      const getPromises = stocks.map(stock => axios.get(`https://repeated-alpaca.glitch.me/v1/stock/${stock}/quote`));
+      axios
+        .all(getPromises)
+        .then((...responses) => {
+          
+        })
     
-      console.log('stockInfos', retInfo);
-      res.status(200)
     });
     
 };
