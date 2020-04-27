@@ -32,6 +32,9 @@ module.exports = function (app) {
 
   app.route('/api/stock-prices')
     .get(function (req, res){
+      const stock = req.query.stock // can be an array: Array.isArray(stock)
+      const like = req.query.like === 'true'
+      const ipAddress = req.
       
     });
     
