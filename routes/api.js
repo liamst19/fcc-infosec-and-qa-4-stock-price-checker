@@ -67,13 +67,26 @@ module.exports = app => {
 
       // Access the database for likes
       const handleDbFindResponses = responses => {
-        console.log(responses);
+        console.log('find', responses);
+        
         if (like) {
           // Save stock / increment likes
-          const updPromises = stockInfo.map(info => {
-            new Like({ stock: info.stock, ip })
+          Promise
+            .all(stockInfos.map(info =>  Like.findOneAndUpdate(
+                                            { stock: info.stock, ip },
+                                            { stock: info.stock, ip },
+                                            { upsert: true }
+                                          ).exec()
+            ))
+            .then(responses => {
+              console.log('findOneAndUpdate', responses)
+              return res.json({
+                stockData:
+                  stockInfos.length === 1
+                    ? { ...stockInfos[0], likes: 1 }
+                    : stockInfos.map(info => ({ ...info, likes: 1 }))
+              });
           })
-          
         } else {
           // Use the likes from responses, 0 if null
           return res.json({
