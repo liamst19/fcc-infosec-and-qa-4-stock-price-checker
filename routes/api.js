@@ -49,7 +49,7 @@ module.exports = app => {
         : [req.query.stock]
       : null; // can be an array: Array.isArray(stock)
     const like = req.query.like === "true";
-    const ip = req.connection.remoteAddress;
+    const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
 
     if (!stocks || stocks.length < 1)
       res.status(400).send("no stock specified");
@@ -72,15 +72,17 @@ module.exports = app => {
           return res && res.length > 0 ? arr.concat({ stock: res[0].stock, count: res.length}) : arr;
         }, []);
         
-        const getLikesCount = (info) => {
+        const alreadyLiked = stock => responses.some(res => res[0].stock === stock && res.some(l => l.ip === ip))
+        
+        const getLikesCount = (info, increment) => {
+          const incr = increment && alreadyLiked(info.stock) ? 1 : 0;
           const stock = info ? likesCounts.filter(s => s.stock === info.stock)[0] : null;
-          return stock ? stock.count : 0;
+          return stock ? stock.count + incr : incr;
         }
         
         const cntArr = likesCounts.map(s => s.count)
         const relLikes = Math.max(...cntArr) - Math.min(...cntArr)
         
-        console.log('find', likesCounts);
         if (like) {
           // Save stock / increment likes
           Promise
@@ -91,12 +93,11 @@ module.exports = app => {
                                           ).exec()
             ))
             .then(responses => {
-              console.log('findOneAndUpdate', responses)
               
               return res.json({
                 stockData:
                   stockInfos.length === 1
-                    ? { ...stockInfos[0], likes: getLikesCount(stockInfos[0]) + 1 }
+                    ? { ...stockInfos[0], likes: getLikesCount(stockInfos[0], true)}
                     : stockInfos.map(info => ({ stock: info.stock, price: info.price, rel_likes: relLikes}))
               });
           })
