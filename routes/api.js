@@ -68,17 +68,20 @@ module.exports = app => {
       // Access the database for likes
       const handleDbFindResponses = responses => {
         
-        const likes = responses.map((arr, res) => {
+        const likesCounts = responses.reduce((arr, res) => {
           return res && res.length > 0 ? arr.concat({ stock: res[0].stock, count: res.length}) : arr;
         }, []);
         
         const getLikesCount = (info) => {
-          const stock = info ? likes.filter(s => s.stock === info.stock)[0] : null;
-          console.log('getLikesCount', {stock, info, likes})
+          const stock = info ? likesCounts.filter(s => s.stock === info.stock)[0] : null;
           return stock ? stock.count : 0;
         }
         
-        console.log('find', likes);
+        const cntArr = likesCounts.map(s => s.count)
+        const relLikes = Math.max(cntArr) - Math.min(cntArr)
+        console.log('cntArr', {cntArr, relLikes})
+        
+        console.log('find', likesCounts);
         if (like) {
           // Save stock / increment likes
           Promise
@@ -95,7 +98,7 @@ module.exports = app => {
                 stockData:
                   stockInfos.length === 1
                     ? { ...stockInfos[0], likes: getLikesCount(stockInfos[0]) + 1 }
-                    : stockInfos.map(info => ({ ...info, likes: getLikesCount(info) + 1 }))
+                    : stockInfos.map(info => ({ ...info, rel_likes: relLikes}))
               });
           })
         } else {
@@ -104,7 +107,7 @@ module.exports = app => {
             stockData:
               stockInfos.length === 1
                 ? { ...stockInfos[0], likes: getLikesCount(stockInfos[0]) }
-                : stockInfos.map(info => ({ ...info, likes: getLikesCount(info) }))
+                : stockInfos.map(info => ({ ...info, rel_likes: relLikes }))
           });
         }
       };
