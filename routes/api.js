@@ -50,19 +50,19 @@ module.exports = (app) => {
       
       if(!stocks || stocks.length < 1) res.status(400).send('no stock specified');
     
-      const getPromises = stocks.map(stock => {
-        return axios.get(`https://repeated-alpaca.glitch.me/v1/stock/${stock}/quote`);
-      });
+      const stockApiPromises = stocks.map(stock => axios.get(`https://repeated-alpaca.glitch.me/v1/stock/${stock}/quote`))
+
       axios
-        .all(getPromises)
-        .then((...responses) => {
-          console.log(responses)
+        .all(stockApiPromises)
+        .then(responses => {
           const infos = responses.reduce((infos, res) => {
-            console.log(res.data)
-            return res.status === 200 ? infos.concat(res.data) : infos;            
+            return res.status === 200 ? infos.concat({
+              stock: res.data.symbol,
+              price: res.data.latestPrice
+            }) : infos;            
           }, []);
           console.log('infos', infos);
-          return res.json(infos);
+          return res.json({ stockData: infos.length === 1 ? infos[0] : infos });
         })
     });
     
