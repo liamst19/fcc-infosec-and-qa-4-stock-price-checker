@@ -63,15 +63,24 @@ module.exports = (app) => {
             }) : infos;            
           }, []);
         
-          const dbPromises = stockInfos.map(info => Like.findOne({ stock: info.stock }).exec())
+          // Access the database for likes
           Promise
-            .all(dbPromises)
+            .all(stockInfos.map(info => Like.find({ stock: info.stock }).exec()))
             .then(responses => {
               console.log(responses)
-              return res.status(200).send('done')
+              if(like){
+                // Save stock / increment likes
+                
+              } else{
+                
+                // Use the likes from responses, 0 if null
+                return res.json({ 
+                  stockData: stockInfos.length === 1 
+                  ? { ...stockInfos[0], likes: 0 } 
+                  : stockInfos.map(info => ({ ...info, likes: 0 })) });
+              }
             })
         
-          // return res.json({ stockData: stockInfos.length === 1 ? stockInfos[0] : stockInfos });
         })
     });
     
