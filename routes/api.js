@@ -50,10 +50,15 @@ module.exports = (app) => {
       
       if(!stocks || stocks.length < 1) res.status(400).send('no stock specified');
     
-      stocks.forEach(async stock => {
+      const retInfo = stocks.map(async stock => {
         const apiUrl = `https://repeated-alpaca.glitch.me/v1/stock/${stock}/quote`;
         
+        const res = await axios(apiUrl)
+        const stockInfo = res.json();
+  
+        return stockInfo;
         // Add like to DB
+        /*
         if(like){
           Like.find({ stock }, async (err, likedStock) => {
             if(err){
@@ -61,12 +66,16 @@ module.exports = (app) => {
             } else {
               if(!likedStock){
                 // Add new like
-                const { err2, savedLi} await (new Like({ stock, ip })).save();
+                const { err2, savedLike } = await (new Like({ stock, ip })).save();
               }
             }
           })
         }
+        */
       });
+    
+      console.log('stockInfos', retInfo);
+      res.status(200)
     });
     
 };
