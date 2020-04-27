@@ -35,20 +35,38 @@ const Schema = mongoose.Schema;
 const likeSchema = new Schema({
   stock: { type: String, required: true },
   ip: { type: String, required: true }
-})
+});
+const Like = mongoose.model('Like', likeSchema);
 
-module.exports = function (app) {
+module.exports = (app) => {
   mongoose.set("useFindAndModify", false);
   mongoose.connect(process.env.DB);
   
   app.route('/api/stock-prices')
-    .get(function (req, res){
-      const stock = req.query.stock // can be an array: Array.isArray(stock)
-      const like = Array.isArray(stock) ? req.query.rel_likes === 'true' : req.query.like === 'true';
-      const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    .get(async  (req, res) => {
+      const stocks = req.query.stock ? Array.isArray(req.query.stock) ? req.query.stock : [req.query.stock] : null; // can be an array: Array.isArray(stock)
+      const like = req.query.like === 'true';
+      const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
       
-      
+      if(!stocks || stocks.length < 1) res.status(400).send('no stock specified');
     
+      stocks.forEach(async stock => {
+        const apiUrl = `https://repeated-alpaca.glitch.me/v1/stock/${stock}/quote`;
+        
+        // Add like to DB
+        if(like){
+          Like.find({ stock }, async (err, likedStock) => {
+            if(err){
+              console.log('error finding like', err)
+            } else {
+              if(!likedStock){
+                // Add new like
+                const { err2, savedLi} await (new Like({ stock, ip })).save();
+              }
+            }
+          })
+        }
+      });
     });
     
 };
