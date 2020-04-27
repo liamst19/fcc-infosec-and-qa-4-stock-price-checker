@@ -23,19 +23,32 @@ Where:
 
 'use strict';
 
-var expect = require('chai').expect;
-var MongoClient = require('mongodb');
+var expect       = require('chai').expect;
+var MongoClient  = require('mongodb');
+var axios        = require('axios');
 
-const CONNECTION_STRING = process.env.DB; //MongoClient.connect(CONNECTION_STRING, function(err, db) {});
+//const CONNECTION_STRING = process.env.DB; 
+//MongoClient.connect(CONNECTION_STRING, function(err, db) {});
+// Mongoose
+var mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const likeSchema = new Schema({
+  stock: { type: String, required: true },
+  ip: { type: String, required: true }
+})
 
 module.exports = function (app) {
-
+  mongoose.set("useFindAndModify", false);
+  mongoose.connect(process.env.DB);
+  
   app.route('/api/stock-prices')
     .get(function (req, res){
       const stock = req.query.stock // can be an array: Array.isArray(stock)
-      const like = req.query.like === 'true'
-      const ipAddress = req.
+      const like = Array.isArray(stock) ? req.query.rel_likes === 'true' : req.query.like === 'true';
+      const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
       
+      
+    
     });
     
 };
