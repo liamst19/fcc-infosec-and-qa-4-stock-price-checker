@@ -67,8 +67,18 @@ module.exports = app => {
 
       // Access the database for likes
       const handleDbFindResponses = responses => {
-        console.log('find', responses);
         
+        const likes = responses.reduce((arr, res) => {
+          return res && res.length > 0 ? arr.concat({ stock: res[0].stock, count: res.length}) : arr;
+        }, []);
+        
+        const getLikesCount = (likes, info) => {
+          const stock = info ? likes.find(s => s.stock === info.stock)[0] : null;
+          console.log('getLikesCount', {info, stock})
+          return stock ? stock.count : 0;
+        }
+        
+        console.log('find', likes);
         if (like) {
           // Save stock / increment likes
           Promise
@@ -80,11 +90,12 @@ module.exports = app => {
             ))
             .then(responses => {
               console.log('findOneAndUpdate', responses)
+              
               return res.json({
                 stockData:
                   stockInfos.length === 1
-                    ? { ...stockInfos[0], likes: 1 }
-                    : stockInfos.map(info => ({ ...info, likes: 1 }))
+                    ? { ...stockInfos[0], likes: getLikesCount(stockInfos[0]) + 1 }
+                    : stockInfos.map(info => ({ ...info, likes: getLikesCount(info) + 1 }))
               });
           })
         } else {
@@ -92,8 +103,8 @@ module.exports = app => {
           return res.json({
             stockData:
               stockInfos.length === 1
-                ? { ...stockInfos[0], likes: 0 }
-                : stockInfos.map(info => ({ ...info, likes: 0 }))
+                ? { ...stockInfos[0], likes: getLikesCount(stockInfos[0]) }
+                : stockInfos.map(info => ({ ...info, likes: getLikesCount(info) }))
           });
         }
       };
