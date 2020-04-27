@@ -68,13 +68,13 @@ module.exports = app => {
       // Access the database for likes
       const handleDbFindResponses = responses => {
         
-        const likes = responses.reduce((arr, res) => {
+        const likes = responses.map((arr, res) => {
           return res && res.length > 0 ? arr.concat({ stock: res[0].stock, count: res.length}) : arr;
         }, []);
         
-        const getLikesCount = (likes, info) => {
-          const stock = info ? likes.find(s => s.stock === info.stock)[0] : null;
-          console.log('getLikesCount', {info, stock})
+        const getLikesCount = (info) => {
+          const stock = info ? likes.filter(s => s.stock === info.stock)[0] : null;
+          console.log('getLikesCount', {stock, info, likes})
           return stock ? stock.count : 0;
         }
         
