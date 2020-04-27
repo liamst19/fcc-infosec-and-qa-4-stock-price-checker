@@ -33,14 +33,12 @@ suite('Functional Tests', function() {
         });
       });
       
-      let likes = 0;
-      
       test('1 stock with like', function(done) {
        chai.request(server)
         .get('/api/stock-prices')
         .query({stock: 'goog', like: true })
         .end(function(err, res){
-         console.log('like 1', res.body)
+           console.log('#1 like', res.body)
           assert.equal(res.status, 200);
           assert.property(res.body, 'stockData', 'response should contain stockData')
           assert.property(res.body.stockData, 'stock', 'stockData should contain stock')
@@ -48,7 +46,6 @@ suite('Functional Tests', function() {
           assert.property(res.body.stockData, 'likes', 'stockData should contain likes')
           assert.equal(res.body.stockData.stock, 'GOOG');
           assert.equal(res.body.stockData.likes, 1);  
-           likes = res.body.stockData.likes;
           done();
         });
       });
@@ -58,14 +55,14 @@ suite('Functional Tests', function() {
         .get('/api/stock-prices')
         .query({stock: 'goog', like: true })
         .end(function(err, res){
-         console.log('like 2', res.body)
+           console.log('#2 like', res.body)
           assert.equal(res.status, 200);
           assert.property(res.body, 'stockData', 'response should contain stockData')
           assert.property(res.body.stockData, 'stock', 'stockData should contain stock')
           assert.property(res.body.stockData, 'price', 'stockData should contain price')
           assert.property(res.body.stockData, 'likes', 'stockData should contain likes')
           assert.equal(res.body.stockData.stock, 'GOOG');
-          assert.equal(res.body.stockData.likes, likes);
+          assert.equal(res.body.stockData.likes, 1);
                     
           done();
         });
@@ -73,10 +70,47 @@ suite('Functional Tests', function() {
       });
       
       test('2 stocks', function(done) {
+       chai.request(server)
+        .get('/api/stock-prices')
+        .query({stock: ['goog', 'msft']})
+        .end(function(err, res){
+         console.log('2 stocks ', res.body)
+          assert.equal(res.status, 200);
+          assert.property(res.body, 'stockData', 'response should contain stockData')
+          assert.isArray(res.body.stockData, 'stockData should be Array')
+          assert.property(res.body, 'stockData', 'response should contain stockData')
+          assert.property(res.body.stockData[0], 'stock', 'stockData should contain stock')
+          assert.property(res.body.stockData[0], 'price', 'stockData should contain price')
+          assert.property(res.body.stockData[0], 'rel_likes', 'stockData should contain rel_likes')
+          assert.equal(res.body.stockData[0].stock, 'GOOG');
+          assert.equal(res.body.stockData[0].rel_likes, 1);
+          assert.equal(res.body.stockData[1].stock, 'MSFT');
+                   
+          done();
+        });
         
       });
       
       test('2 stocks with like', function(done) {
+       chai.request(server)
+        .get('/api/stock-prices')
+        .query({stock: ['goog', 'msft'], like: true })
+        .end(function(err, res){
+          assert.equal(res.status, 200);
+          assert.property(res.body, 'stockData', 'response should contain stockData')
+          assert.isArray(res.body.stockData, 'stockData should be Array')
+          assert.property(res.body, 'stockData', 'response should contain stockData')
+          assert.property(res.body.stockData[0], 'stock', 'stockData should contain stock')
+          assert.property(res.body.stockData[0], 'price', 'stockData should contain price')
+          assert.property(res.body.stockData[0], 'rel_likes', 'stockData should contain likes')
+          assert.equal(res.body.stockData[0].stock, 'GOOG');
+          assert.equal(res.body.stockData[0].rel_likes, 0);
+          assert.equal(res.body.stockData[1].stock, 'MSFT');
+          assert.equal(res.body.stockData[1].rel_likes, 0);
+                   
+          done();
+        });
+        
         
       });
       

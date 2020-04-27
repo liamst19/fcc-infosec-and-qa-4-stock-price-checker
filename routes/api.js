@@ -75,7 +75,7 @@ module.exports = app => {
         const alreadyLiked = stock => responses.some(res => res[0].stock === stock && res.some(l => l.ip === ip))
         
         const getLikesCount = (info, increment) => {
-          const incr = increment && alreadyLiked(info.stock) ? 1 : 0;
+          const incr = increment && !alreadyLiked(info.stock) ? 1 : 0;
           const stock = info ? likesCounts.filter(s => s.stock === info.stock)[0] : null;
           return stock ? stock.count + incr : incr;
         }
@@ -106,7 +106,7 @@ module.exports = app => {
           return res.json({
             stockData:
               stockInfos.length === 1
-                ? { ...stockInfos[0], likes: getLikesCount(stockInfos[0]) }
+                ? { ...stockInfos[0], likes: getLikesCount(stockInfos[0], false) }
                 : stockInfos.map(info => ({ stock: info.stock, price: info.price, rel_likes: relLikes }))
           });
         }
