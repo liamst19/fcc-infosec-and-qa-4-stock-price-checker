@@ -38,7 +38,6 @@ suite('Functional Tests', function() {
         .get('/api/stock-prices')
         .query({stock: 'goog', like: true })
         .end(function(err, res){
-           console.log('#1 like', res.body)
           assert.equal(res.status, 200);
           assert.property(res.body, 'stockData', 'response should contain stockData')
           assert.property(res.body.stockData, 'stock', 'stockData should contain stock')
@@ -55,7 +54,6 @@ suite('Functional Tests', function() {
         .get('/api/stock-prices')
         .query({stock: 'goog', like: true })
         .end(function(err, res){
-           console.log('#2 like', res.body)
           assert.equal(res.status, 200);
           assert.property(res.body, 'stockData', 'response should contain stockData')
           assert.property(res.body.stockData, 'stock', 'stockData should contain stock')
@@ -74,7 +72,6 @@ suite('Functional Tests', function() {
         .get('/api/stock-prices')
         .query({stock: ['goog', 'msft']})
         .end(function(err, res){
-         console.log('2 stocks ', res.body)
           assert.equal(res.status, 200);
           assert.property(res.body, 'stockData', 'response should contain stockData')
           assert.isArray(res.body.stockData, 'stockData should be Array')
@@ -83,7 +80,6 @@ suite('Functional Tests', function() {
           assert.property(res.body.stockData[0], 'price', 'stockData should contain price')
           assert.property(res.body.stockData[0], 'rel_likes', 'stockData should contain rel_likes')
           assert.equal(res.body.stockData[0].stock, 'GOOG');
-          assert.equal(res.body.stockData[0].rel_likes, 1);
           assert.equal(res.body.stockData[1].stock, 'MSFT');
                    
           done();
