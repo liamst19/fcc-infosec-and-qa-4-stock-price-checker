@@ -49,7 +49,7 @@ module.exports = app => {
         : [req.query.stock]
       : null; // can be an array: Array.isArray(stock)
     const like = req.query.like === "true";
-    const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    const ip = req.connection.remoteAddress;
 
     if (!stocks || stocks.length < 1)
       res.status(400).send("no stock specified");
@@ -78,8 +78,7 @@ module.exports = app => {
         }
         
         const cntArr = likesCounts.map(s => s.count)
-        const relLikes = Math.max(cntArr) - Math.min(cntArr)
-        console.log('cntArr', {cntArr, relLikes})
+        const relLikes = Math.max(...cntArr) - Math.min(...cntArr)
         
         console.log('find', likesCounts);
         if (like) {
@@ -98,7 +97,7 @@ module.exports = app => {
                 stockData:
                   stockInfos.length === 1
                     ? { ...stockInfos[0], likes: getLikesCount(stockInfos[0]) + 1 }
-                    : stockInfos.map(info => ({ ...info, rel_likes: relLikes}))
+                    : stockInfos.map(info => ({ stock: info.stock, price: info.price, rel_likes: relLikes}))
               });
           })
         } else {
@@ -107,7 +106,7 @@ module.exports = app => {
             stockData:
               stockInfos.length === 1
                 ? { ...stockInfos[0], likes: getLikesCount(stockInfos[0]) }
-                : stockInfos.map(info => ({ ...info, rel_likes: relLikes }))
+                : stockInfos.map(info => ({ stock: info.stock, price: info.price, rel_likes: relLikes }))
           });
         }
       };

@@ -22,18 +22,47 @@ suite('Functional Tests', function() {
         .get('/api/stock-prices')
         .query({stock: 'goog'})
         .end(function(err, res){
-          
-          //complete this one too
-          
+          assert.equal(res.status, 200);
+          assert.property(res.body, 'stockData', 'response should contain stockData')
+          assert.property(res.body.stockData, 'stock', 'stockData should contain stock')
+          assert.property(res.body.stockData, 'price', 'stockData should contain price')
+          assert.property(res.body.stockData, 'likes', 'stockData should contain likes')
+          assert.equal(res.body.stockData.stock, 'GOOG');
+                   
           done();
         });
       });
       
       test('1 stock with like', function(done) {
-        
+       chai.request(server)
+        .get('/api/stock-prices')
+        .query({stock: 'goog', like: true })
+        .end(function(err, res){
+          assert.equal(res.status, 200);
+          assert.property(res.body, 'stockData', 'response should contain stockData')
+          assert.property(res.body.stockData, 'stock', 'stockData should contain stock')
+          assert.property(res.body.stockData, 'price', 'stockData should contain price')
+          assert.property(res.body.stockData, 'likes', 'stockData should contain likes')
+          assert.equal(res.body.stockData.stock, 'GOOG');
+                   
+          done();
+        });
       });
       
       test('1 stock with like again (ensure likes arent double counted)', function(done) {
+       chai.request(server)
+        .get('/api/stock-prices')
+        .query({stock: 'goog', like: true })
+        .end(function(err, res){
+          assert.equal(res.status, 200);
+          assert.property(res.body, 'stockData', 'response should contain stockData')
+          assert.property(res.body.stockData, 'stock', 'stockData should contain stock')
+          assert.property(res.body.stockData, 'price', 'stockData should contain price')
+          assert.property(res.body.stockData, 'likes', 'stockData should contain likes')
+          assert.equal(res.body.stockData.stock, 'GOOG');
+                   
+          done();
+        });
         
       });
       
