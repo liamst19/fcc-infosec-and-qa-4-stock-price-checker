@@ -42,6 +42,8 @@ module.exports = (app) => {
   mongoose.set("useFindAndModify", false);
   mongoose.connect(process.env.DB);
   
+  
+  
   app.route('/api/stock-prices')
     .get((req, res) => {
       const stocks = req.query.stock ? Array.isArray(req.query.stock) ? req.query.stock : [req.query.stock] : null; // can be an array: Array.isArray(stock)
@@ -49,6 +51,8 @@ module.exports = (app) => {
       const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
       
       if(!stocks || stocks.length < 1) res.status(400).send('no stock specified');
+    
+      const 
     
       // Get stock info from api
       axios
