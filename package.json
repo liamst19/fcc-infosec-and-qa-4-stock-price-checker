@@ -1,23 +1,32 @@
 {
-  "name": "my-hyperdev-app",
+  "name": "fcc-infosec-and-qa-4-stock-price-checker",
   "version": "0.0.1",
-  "description": "What am I about?",
+  "description": "a project exercise from freeCodeCamp",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node -r dotenv/config server.js",
+    "watch": "nodemon server.js",
+    "eslint": "eslint .",
+    "eslint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "express": "^4.14.0",
-    "cors": "^2.8.1",
-    "body-parser": "^1.15.2",
-    "chai": "^3.5.0",
-    "mongodb": "^2.2.16",
-    "chai-http": "^3.0.0",
-    "mocha": "^3.2.0",
-    "zombie": "^5.0.5",
-    "helmet": "^3.1.0",
-    "mongoose": "^5.9.9",
+    "express": "^4.17.1",
+    "dotenv": "^8.2.0",
+    "cors": "^2.8.5",
+    "body-parser": "^1.19.0",
+    "chai": "^4.2.0",
+    "mongodb": "^3.5.6",
+    "chai-http": "^4.3.0",
+    "mocha": "^7.1.2",
+    "zombie": "^6.1.4",
+    "helmet": "^3.22.0",
+    "mongoose": "^5.9.10",
     "axios": "^0.19.2"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "eslint": "^6.8.0",
+    "nodemon": "^2.0.2"
   },
   "engines": {
     "node": "4.4.3"
